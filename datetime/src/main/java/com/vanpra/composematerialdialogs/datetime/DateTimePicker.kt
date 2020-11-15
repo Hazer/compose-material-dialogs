@@ -2,14 +2,12 @@ package com.vanpra.composematerialdialogs.datetime
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -56,72 +54,66 @@ fun MaterialDialog.datetimepicker(
     val selectedTime = remember { mutableStateOf(currentTime) }
 
     val scrollState = rememberScrollState()
-    val columnScrollState = rememberScrollState()
 
     val scrollTo = remember { mutableStateOf(0f) }
     val currentScreen = remember { mutableStateOf(0) }
 
     WithConstraints {
-        ScrollableColumn(
-            Modifier.heightIn(max = maxHeight * 0.8f),
-            scrollState = columnScrollState
-        ) {
-            Box(Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 24.dp)) {
-                val ratio = scrollState.value / constraints.maxWidth
-                Image(
-                    Icons.Default.ArrowBack,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground),
-                    modifier = Modifier.padding(start = 16.dp)
-                        .clip(CircleShape)
-                        .clickable(
-                            onClick = {
-                                scrollState.smoothScrollTo(0f)
-                                currentScreen.value = 0
-                            }
-                        )
-                        .drawOpacity(1f * ratio)
-                        .wrapContentHeight(Alignment.CenterVertically)
-                )
-                DialogTitle(title)
-            }
-
-            Row(Modifier.fillMaxWidth().wrapContentSize(Alignment.Center).height(10.dp)) {
-                val ratio = scrollState.value / constraints.maxWidth
-                val color = MaterialTheme.colors.onBackground
-                Canvas(modifier = Modifier) {
-                    val offset = Offset(30f, 0f)
-                    drawCircle(
-                        color.copy(0.7f + 0.3f * (1 - ratio)),
-                        radius = 8f + 7f * (1 - ratio),
-                        center = center - offset
+        Box(Modifier.fillMaxWidth().padding(top = 24.dp, bottom = 24.dp)) {
+            val ratio = scrollState.value / constraints.maxWidth
+            Image(
+                Icons.Default.ArrowBack,
+                colorFilter = ColorFilter.tint(MaterialTheme.colors.onBackground),
+                modifier = Modifier.padding(start = 16.dp)
+                    .clip(CircleShape)
+                    .clickable(
+                        onClick = {
+                            scrollState.smoothScrollTo(0f)
+                            currentScreen.value = 0
+                        }
                     )
-                    drawCircle(
-                        color.copy(0.7f + 0.3f * ratio),
-                        radius = 8f + 7f * ratio,
-                        center = center + offset
-                    )
-                }
-            }
-
-            scrollTo.value = constraints.maxWidth.toFloat()
-            ScrollableRow(
-                scrollState = scrollState,
-                isScrollEnabled = false,
-                children = {
-                    DatePickerLayout(
-                        Modifier.padding(top = 16.dp)
-                            .sizeIn(maxWidth = maxWidth, maxHeight = maxHeight),
-                        selectedDate,
-                        currentDate
-                    )
-                    TimePickerLayout(
-                        Modifier.padding(top = 16.dp)
-                            .sizeIn(maxWidth = maxWidth, maxHeight = maxHeight),
-                        selectedTime
-                    )
-                }
+                    .drawOpacity(1f * ratio)
+                    .wrapContentHeight(Alignment.CenterVertically)
             )
+            DialogTitle(title)
         }
+
+        Row(Modifier.fillMaxWidth().wrapContentSize(Alignment.Center).height(10.dp)) {
+            val ratio = scrollState.value / constraints.maxWidth
+            val color = MaterialTheme.colors.onBackground
+            Canvas(modifier = Modifier) {
+                val offset = Offset(30f, 0f)
+                drawCircle(
+                    color.copy(0.7f + 0.3f * (1 - ratio)),
+                    radius = 8f + 7f * (1 - ratio),
+                    center = center - offset
+                )
+                drawCircle(
+                    color.copy(0.7f + 0.3f * ratio),
+                    radius = 8f + 7f * ratio,
+                    center = center + offset
+                )
+            }
+        }
+
+        scrollTo.value = constraints.maxWidth.toFloat()
+        ScrollableRow(
+            scrollState = scrollState,
+            isScrollEnabled = false,
+            children = {
+                DatePickerLayout(
+                    Modifier.padding(top = 16.dp)
+                        .sizeIn(maxWidth = maxWidth, maxHeight = maxHeight),
+                    selectedDate,
+                    currentDate
+                )
+                TimePickerLayout(
+                    Modifier.padding(top = 16.dp)
+                        .sizeIn(maxWidth = maxWidth, maxHeight = maxHeight),
+                    selectedTime
+                )
+            }
+        )
     }
 
     buttons {
@@ -135,7 +127,6 @@ fun MaterialDialog.datetimepicker(
         ) {
             if (currentScreen.value == 0) {
                 scrollState.smoothScrollTo(scrollTo.value)
-                columnScrollState.smoothScrollTo(0f)
                 currentScreen.value = 1
             } else {
                 onComplete(LocalDateTime.of(selectedDate.value, selectedTime.value))

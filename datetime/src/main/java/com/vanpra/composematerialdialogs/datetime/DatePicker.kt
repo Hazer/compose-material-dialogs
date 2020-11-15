@@ -1,7 +1,6 @@
 package com.vanpra.composematerialdialogs.datetime
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.preferredSize
 import androidx.compose.foundation.layout.size
@@ -88,24 +86,22 @@ internal fun DatePickerLayout(
 ) {
     Column(modifier) {
         WithConstraints {
-            ScrollableColumn(Modifier.heightIn(max = maxHeight * 0.8f)) {
-                DateTitle(selectedDate)
-                ViewPager(Modifier.background(color = Color.Transparent), useAlpha = true) {
-                    val newDate = remember(index) {
-                        currentDate.plusMonths(index.toLong())
-                    }
-                    val dates = remember(newDate) { getDates(newDate) }
-                    val yearMonth = remember(newDate) { newDate.yearMonth }
+            DateTitle(selectedDate)
+            ViewPager(Modifier.background(color = Color.Transparent), useAlpha = true) {
+                val newDate = remember(index) {
+                    currentDate.plusMonths(index.toLong())
+                }
+                val dates = remember(newDate) { getDates(newDate) }
+                val yearMonth = remember(newDate) { newDate.yearMonth }
 
-                    Column {
-                        MonthTitle(
-                            this@ViewPager,
-                            newDate.month.fullLocalName,
-                            newDate.year.toString()
-                        )
-                        DaysTitle()
-                        DateLayout(dates, yearMonth, selectedDate)
-                    }
+                Column {
+                    MonthTitle(
+                        this@ViewPager,
+                        newDate.month.fullLocalName,
+                        newDate.year.toString()
+                    )
+                    DaysTitle()
+                    DateLayout(dates, yearMonth, selectedDate)
                 }
             }
         }
@@ -151,7 +147,8 @@ private fun DateLayout(
                         modifier = Modifier.size(boxSize)
                             .clickable(
                                 onClick = {
-                                    selected.value = LocalDate.of(yearMonth.year, yearMonth.month, it)
+                                    selected.value =
+                                        LocalDate.of(yearMonth.year, yearMonth.month, it)
                                 },
                                 indication = null
                             )
